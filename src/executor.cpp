@@ -104,3 +104,113 @@ void Executor::execute(const Command& command)
         std::cerr << "mysh: waitpid failed\n";
     }
 }
+
+void Executor::execute_pipeline(const Pipeline& pipeline)
+{
+    if (pipeline.commands.size() < 2)
+    {
+        return;
+    }
+
+    int previous_read_fd = -1;
+
+    std::vector<pid_t> child_pids;
+
+    for (size_t i = 0; i < pipeline.commands.size(); ++i)
+    {
+        int pipe_fd[2] = {-1, -1};
+
+        bool has_next_command = (i < pipeline.commands.size() - 1);
+
+        if (has_next_command)
+        {
+            if (pipe(pipe_fd) < 0)
+            {
+                perror("mysh: pipe");
+                return;
+            }
+        }
+
+        pid_t pid = fork();
+
+        if (pid < 0)
+        {
+            perror("mysh: fork");
+            return;
+        }
+
+        if (pid == 0)
+        {
+            // Connect previous command's output to stdin.
+            if (previous_read_fd != -1)
+            {
+                if (dup2(previous_read_fd, STDIN_FILENO) < 0)
+                {
+                    perror("mysh: dup2");
+                    _exit(1);
+                }
+            }
+
+            // Connect stdout to the next pipe.
+            if (has_next_command)
+            {
+                if (dup2(pipe_fd[1], STDOUT_FILENO) < 0)
+                {
+                    perror("mysh: dup2");
+                    _exit(1);
+                }
+            }
+
+            if (previous_read_fd != -1)
+            {
+                close(previous_read_fd);
+            }
+
+            if (has_next_command)
+            {
+                close(pipe_fd[0]);
+                close(pipe_fd[1]);
+            }
+
+            const Command& command = pipeline.commands[i];
+
+            std::vector<char*> args;
+
+            for (const auto& argument : command.arguments)
+            {
+                args.push_back(const_cast<char*>(argument.c_str()));
+            }
+
+            args.push_back(nullptr);
+
+            execvp(command.program.c_str(), args.data());
+
+            std::cerr << "mysh: command not found: "
+                      << command.program << '\n';
+
+            _exit(127);
+        }
+
+        child_pids.push_back(pid);
+
+        if (previous_read_fd != -1)
+        {
+            close(previous_read_fd);
+        }
+
+        if (has_next_command)
+        {
+            close(pipe_fd[1]);
+            previous_read_fd = pipe_fd[0];
+        }
+        else
+        {
+            previous_read_fd = -1;
+        }
+    }
+
+    for (pid_t pid : child_pids)
+    {
+        waitpid(pid, nullptr, 0);
+    }
+}

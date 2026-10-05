@@ -15,10 +15,18 @@ struct Command
     bool append_output = false;
 };
 
+struct Pipeline
+{
+    std::vector<Command> commands;
+};
+
 class Parser
 {
 public:
-    Command parse(const std::string& input);
+    Pipeline parse(const std::string& input);
+    
+private:
+    Command parse_command(const std::string& input);
 };
 
 #endif

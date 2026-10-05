@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-Command Parser::parse(const std::string& input)
+Command Parser::parse_command(const std::string& input)
 {
     Command command;
 
@@ -46,4 +46,24 @@ Command Parser::parse(const std::string& input)
     }
 
     return command;
+}
+
+Pipeline Parser::parse(const std::string& input)
+{
+    Pipeline pipeline;
+
+    std::stringstream stream(input);
+    std::string command_text;
+
+    while (std::getline(stream, command_text, '|'))
+    {
+        if (!command_text.empty())
+        {
+            pipeline.commands.push_back(
+                parse_command(command_text)
+            );
+        }
+    }
+
+    return pipeline;
 }

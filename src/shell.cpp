@@ -34,19 +34,33 @@ void Shell::run()
             continue;
         }
 
-        Command command = parser.parse(input);
+        Pipeline pipeline = parser.parse(input);
 
-        if (builtins.is_builtin(command))
+        if (pipeline.commands.empty())
         {
-            if (command.program == "exit")
-            {
-                break;
-            }
-
-            builtins.execute(command);
             continue;
         }
 
-        executor.execute(command);
+        if (pipeline.commands.size() == 1)
+{
+    Command& command = pipeline.commands[0];
+
+    if (builtins.is_builtin(command))
+    {
+        if (command.program == "exit")
+        {
+            break;
+        }
+
+        builtins.execute(command);
+        continue;
+    }
+
+    executor.execute(command);
+}
+else
+{
+    executor.execute_pipeline(pipeline);
+}
     }
 }
