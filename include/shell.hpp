@@ -1,6 +1,8 @@
 #ifndef MYSH_SHELL_HPP
 #define MYSH_SHELL_HPP
 
+#include <string>
+
 class Shell
 {
 public:
@@ -8,6 +10,7 @@ public:
 
 private:
     void print_prompt();
+    std::string read_command();
 };
 
 #endif
