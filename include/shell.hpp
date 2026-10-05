@@ -1,6 +1,7 @@
 #ifndef MYSH_SHELL_HPP
 #define MYSH_SHELL_HPP
 
+#include "builtins.hpp"
 #include "executor.hpp"
 #include "parser.hpp"
 
@@ -17,6 +18,7 @@ private:
 
     Parser parser;
     Executor executor;
+    Builtins builtins;
 };
 
 #endif

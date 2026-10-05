@@ -34,12 +34,18 @@ void Shell::run()
             continue;
         }
 
-        if (input == "exit")
-        {
-            break;
-        }
-
         Command command = parser.parse(input);
+
+        if (builtins.is_builtin(command))
+        {
+            if (command.program == "exit")
+            {
+                break;
+            }
+
+            builtins.execute(command);
+            continue;
+        }
 
         executor.execute(command);
     }
