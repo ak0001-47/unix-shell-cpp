@@ -8,6 +8,11 @@ struct Command
 {
     std::string program;
     std::vector<std::string> arguments;
+
+    std::string input_file;
+    std::string output_file;
+
+    bool append_output = false;
 };
 
 class Parser

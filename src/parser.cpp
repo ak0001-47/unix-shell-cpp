@@ -11,6 +11,32 @@ Command Parser::parse(const std::string& input)
 
     while (stream >> token)
     {
+        if (token == ">")
+        {
+            if (stream >> command.output_file)
+            {
+                command.append_output = false;
+            }
+
+            continue;
+        }
+
+        if (token == ">>")
+        {
+            if (stream >> command.output_file)
+            {
+                command.append_output = true;
+            }
+
+            continue;
+        }
+
+        if (token == "<")
+        {
+            stream >> command.input_file;
+            continue;
+        }
+
         command.arguments.push_back(token);
     }
 
