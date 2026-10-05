@@ -27,13 +27,20 @@ void Shell::run()
     {
         print_prompt();
 
-        std::string command = read_command();
+        std::string input = read_command();
 
-        if (command.empty())
+        if (input.empty())
         {
             continue;
         }
 
-        std::cout << "You entered: " << command << '\n';
+        if (input == "exit")
+        {
+            break;
+        }
+
+        Command command = parser.parse(input);
+
+        executor.execute(command);
     }
 }
