@@ -5,6 +5,7 @@
 #include "executor.hpp"
 #include "parser.hpp"
 #include "history.hpp"
+#include "jobs.hpp"
 
 #include <string>
 
@@ -21,6 +22,7 @@ private:
     Executor executor;
     Builtins builtins;
     History history;
+    JobManager job_manager;
 };
 
 #endif

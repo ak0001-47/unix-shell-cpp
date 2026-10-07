@@ -6,19 +6,19 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void Executor::execute(const Command& command, bool background)
+pid_t Executor::execute(const Command& command, bool background)
 {
-    if (command.program.empty())
-    {
-        return;
-    }
+   if (command.program.empty())
+   {
+     return -1;
+   }
 
     pid_t pid = fork();
 
     if (pid < 0)
     {
         std::cerr << "mysh: fork failed\n";
-        return;
+        return -1;
     }
 
     if (pid == 0)
@@ -110,6 +110,8 @@ else
         std::cerr << "mysh: waitpid failed\n";
     }
 }
+
+   return pid;
 }
 
 void Executor::execute_pipeline(const Pipeline& pipeline)
