@@ -24,10 +24,13 @@ bool Builtins::is_builtin(const Command& command)
     if (command.program == "unset")
     return true;
 
+    if (command.program == "history")
+    return true;
+
     return false;
 }
 
-bool Builtins::execute(const Command& command)
+bool Builtins::execute(const Command& command, History& history)
 {
     if (command.program == "cd")
     {
@@ -139,5 +142,12 @@ bool Builtins::execute(const Command& command)
 
     return true;
    }
+
+   if (command.program == "history")
+   {
+    history.print();
+    return true;
+   }
+
     return false;
 }

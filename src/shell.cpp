@@ -23,16 +23,20 @@ std::string Shell::read_command()
 
 void Shell::run()
 {
+    history.load();
+
     while (true)
     {
         print_prompt();
 
         std::string input = read_command();
-
+        
         if (input.empty())
         {
             continue;
         }
+        
+        history.add(input);
 
         Pipeline pipeline = parser.parse(input);
 
@@ -49,10 +53,11 @@ void Shell::run()
     {
         if (command.program == "exit")
         {
+            history.save();
             break;
         }
 
-        builtins.execute(command);
+       builtins.execute(command, history);
         continue;
     }
 

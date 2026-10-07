@@ -17,6 +17,7 @@ add_executable(mysh
     src/builtins.cpp
     src/signals.cpp
     src/jobs.cpp
+    src/history.cpp
 )
 
 target_include_directories(mysh

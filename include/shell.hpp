@@ -4,6 +4,7 @@
 #include "builtins.hpp"
 #include "executor.hpp"
 #include "parser.hpp"
+#include "history.hpp"
 
 #include <string>
 
@@ -19,6 +20,7 @@ private:
     Parser parser;
     Executor executor;
     Builtins builtins;
+    History history;
 };
 
 #endif
