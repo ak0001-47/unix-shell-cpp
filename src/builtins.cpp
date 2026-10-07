@@ -17,6 +17,12 @@ bool Builtins::is_builtin(const Command& command)
 
     if (command.program == "help")
         return true;
+    
+    if (command.program == "set")
+    return true;
+
+    if (command.program == "unset")
+    return true;
 
     return false;
 }
@@ -89,5 +95,49 @@ bool Builtins::execute(const Command& command)
         return true;
     }
 
+    if (command.program == "set")
+   {
+    if (command.arguments.size() != 2)
+    {
+        std::cerr << "mysh: set: usage: set NAME=value\n";
+        return true;
+    }
+
+    const std::string& assignment = command.arguments[1];
+
+    size_t equal_pos = assignment.find('=');
+
+    if (equal_pos == std::string::npos || equal_pos == 0)
+    {
+        std::cerr << "mysh: set: usage: set NAME=value\n";
+        return true;
+    }
+
+    std::string name = assignment.substr(0, equal_pos);
+    std::string value = assignment.substr(equal_pos + 1);
+
+    if (setenv(name.c_str(), value.c_str(), 1) != 0)
+    {
+        std::perror("mysh: set");
+    }
+
+    return true;
+   }
+
+    if (command.program == "unset")
+   {
+    if (command.arguments.size() != 2)
+    {
+        std::cerr << "mysh: unset: usage: unset NAME\n";
+        return true;
+    }
+
+    if (unsetenv(command.arguments[1].c_str()) != 0)
+    {
+        std::perror("mysh: unset");
+    }
+
+    return true;
+   }
     return false;
 }

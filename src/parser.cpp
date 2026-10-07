@@ -1,6 +1,26 @@
 #include "parser.hpp"
 
+#include <cstdlib>
 #include <sstream>
+
+std::string expand_variable(const std::string& token)
+{
+    if (token.size() < 2 || token[0] != '$')
+    {
+        return token;
+    }
+
+    std::string variable_name = token.substr(1);
+
+    const char* value = std::getenv(variable_name.c_str());
+
+    if (value == nullptr)
+    {
+        return "";
+    }
+
+    return value;
+}
 
 Command Parser::parse_command(const std::string& input)
 {
@@ -37,7 +57,7 @@ Command Parser::parse_command(const std::string& input)
             continue;
         }
 
-        command.arguments.push_back(token);
+        command.arguments.push_back(expand_variable(token));
     }
 
     if (!command.arguments.empty())
@@ -75,7 +95,9 @@ Pipeline Parser::parse(const std::string& input)
     {
         if (!command_text.empty())
         {
-            pipeline.commands.push_back(parse_command(command_text));
+            pipeline.commands.push_back(
+                parse_command(command_text)
+            );
         }
     }
 
