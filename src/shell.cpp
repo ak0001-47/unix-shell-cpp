@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <sys/types.h>
 
 void Shell::print_prompt()
 {
@@ -57,11 +58,18 @@ void Shell::run()
             break;
         }
 
-       builtins.execute(command, history);
+       builtins.execute(command,history,job_manager);
         continue;
     }
 
-    executor.execute(command, pipeline.background);
+   pid_t pid = executor.execute(command,pipeline.background);
+
+       if (pipeline.background && pid > 0)
+       {
+           int job_id = job_manager.add_job(pid,input);
+
+            std::cout << "[" << job_id << "] "<< pid << '\n';
+    }
 }
 else
 {

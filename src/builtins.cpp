@@ -27,10 +27,13 @@ bool Builtins::is_builtin(const Command& command)
     if (command.program == "history")
     return true;
 
+    if (command.program == "jobs")
+    return true;
+
     return false;
 }
 
-bool Builtins::execute(const Command& command, History& history)
+bool Builtins::execute(const Command& command,History& history,JobManager& job_manager)
 {
     if (command.program == "cd")
     {
@@ -146,6 +149,12 @@ bool Builtins::execute(const Command& command, History& history)
    if (command.program == "history")
    {
     history.print();
+    return true;
+   }
+
+   if (command.program == "jobs")
+   {
+    job_manager.print_jobs();
     return true;
    }
 
