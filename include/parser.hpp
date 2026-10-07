@@ -4,6 +4,12 @@
 #include <string>
 #include <vector>
 
+struct Token
+{
+    std::string value;
+    bool operator_token = false;
+};
+
 struct Command
 {
     std::string program;
@@ -25,9 +31,12 @@ class Parser
 {
 public:
     Pipeline parse(const std::string& input);
-    
+
 private:
-    Command parse_command(const std::string& input);
+    std::vector<Token> tokenize(const std::string& input, bool& valid);
+    Command parse_command(const std::vector<Token>& tokens);
+
+    std::string expand_variables(const std::string& input,bool allow_expansion);
 };
 
 #endif
