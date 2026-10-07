@@ -51,17 +51,31 @@ Command Parser::parse_command(const std::string& input)
 Pipeline Parser::parse(const std::string& input)
 {
     Pipeline pipeline;
+    std::string command_line = input;
 
-    std::stringstream stream(input);
+    size_t pos = command_line.find_last_not_of(" \t");
+
+    if (pos != std::string::npos && command_line[pos] == '&')
+    {
+        pipeline.background = true;
+        command_line.erase(pos);
+
+        pos = command_line.find_last_not_of(" \t");
+
+        if (pos != std::string::npos)
+        {
+            command_line.erase(pos + 1);
+        }
+    }
+
+    std::stringstream stream(command_line);
     std::string command_text;
 
     while (std::getline(stream, command_text, '|'))
     {
         if (!command_text.empty())
         {
-            pipeline.commands.push_back(
-                parse_command(command_text)
-            );
+            pipeline.commands.push_back(parse_command(command_text));
         }
     }
 

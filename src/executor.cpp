@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void Executor::execute(const Command& command)
+void Executor::execute(const Command& command, bool background)
 {
     if (command.program.empty())
     {
@@ -97,12 +97,19 @@ void Executor::execute(const Command& command)
         _exit(127);
     }
 
+    if (background)
+{
+    std::cout << "[background] pid: " << pid << '\n';
+}
+else
+{
     int status;
 
     if (waitpid(pid, &status, 0) < 0)
     {
         std::cerr << "mysh: waitpid failed\n";
     }
+}
 }
 
 void Executor::execute_pipeline(const Pipeline& pipeline)
@@ -209,8 +216,22 @@ void Executor::execute_pipeline(const Pipeline& pipeline)
         }
     }
 
+    if (pipeline.background)
+{
+    std::cout << "[background]";
+
+    for (pid_t pid : child_pids)
+    {
+        std::cout << " " << pid;
+    }
+
+    std::cout << '\n';
+}
+else
+{
     for (pid_t pid : child_pids)
     {
         waitpid(pid, nullptr, 0);
     }
+}
 }

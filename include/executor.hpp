@@ -6,7 +6,7 @@
 class Executor
 {
 public:
-    void execute(const Command& command);
+    void execute(const Command& command, bool background = false);
     void execute_pipeline(const Pipeline& pipeline);
 };
 

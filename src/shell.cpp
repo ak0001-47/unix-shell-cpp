@@ -56,7 +56,7 @@ void Shell::run()
         continue;
     }
 
-    executor.execute(command);
+    executor.execute(command, pipeline.background);
 }
 else
 {
