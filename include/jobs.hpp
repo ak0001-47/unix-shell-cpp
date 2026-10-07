@@ -17,6 +17,7 @@ struct Job
 {
     int id;
     pid_t pid;
+    pid_t pgid;
     std::string command;
     JobState state;
 };

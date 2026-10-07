@@ -23,7 +23,12 @@ pid_t Executor::execute(const Command& command, bool background)
 
     if (pid == 0)
     {
-        // Input redirection: <
+        if (background)
+   {
+     setpgid(0, 0);
+   }
+       
+       // Input redirection: <
         if (!command.input_file.empty())
         {
             int input_fd = open(command.input_file.c_str(), O_RDONLY);
@@ -125,6 +130,8 @@ void Executor::execute_pipeline(const Pipeline& pipeline)
 
     std::vector<pid_t> child_pids;
 
+    pid_t pgid = 0;
+
     for (size_t i = 0; i < pipeline.commands.size(); ++i)
     {
         int pipe_fd[2] = {-1, -1};
@@ -150,6 +157,15 @@ void Executor::execute_pipeline(const Pipeline& pipeline)
 
         if (pid == 0)
         {
+            if (pgid == 0)
+           {
+               setpgid(0, 0);
+            }
+            else
+            {
+                setpgid(0, pgid);
+           }
+
             // Connect previous command's output to stdin.
             if (previous_read_fd != -1)
             {
@@ -200,9 +216,16 @@ void Executor::execute_pipeline(const Pipeline& pipeline)
             _exit(127);
         }
 
-        child_pids.push_back(pid);
+        if (pgid == 0)
+         {
+             pgid = pid;
+         }
 
-        if (previous_read_fd != -1)
+         setpgid(pid, pgid);
+
+         child_pids.push_back(pid);
+
+         if (previous_read_fd != -1)
         {
             close(previous_read_fd);
         }

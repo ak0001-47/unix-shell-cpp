@@ -11,6 +11,7 @@ int JobManager::add_job(
 
     job.id = next_job_id++;
     job.pid = pid;
+    job.pgid = pid;
     job.command = command;
     job.state = JobState::Running;
 
