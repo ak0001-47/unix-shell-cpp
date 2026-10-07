@@ -1,9 +1,11 @@
 #include "shell.hpp"
+#include "signals.hpp"
 
 int main()
 {
-    Shell shell;
+    SignalHandler::setup();
 
+    Shell shell;
     shell.run();
 
     return 0;
