@@ -102,3 +102,9 @@ getenv()
 setenv()
 unsetenv()
 setpgid()
+
+Author:
+Akshat Krishna
+C++ | Linux | Systems Programming | Operating Systems | Computer Networks
+GitHub:
+https://github.com/ak0001-47
